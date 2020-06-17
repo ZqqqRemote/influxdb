@@ -98,6 +98,7 @@ func AuthorizationService(
 			continue
 		}
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			tt.fn(init, t)
 		})
 	}

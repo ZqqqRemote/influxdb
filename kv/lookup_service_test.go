@@ -18,7 +18,7 @@ var (
 	nonexistantID    = platform.ID(10001)
 )
 
-type StoreFn func(*testing.T) (kv.Store, func(), error)
+type StoreFn func(*testing.T) (kv.SchemaStore, func(), error)
 
 func TestLookupService_Name_WithBolt(t *testing.T) {
 	testLookupName(NewTestBoltStore, t)
