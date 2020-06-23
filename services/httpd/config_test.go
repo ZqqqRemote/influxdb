@@ -1,11 +1,64 @@
 package httpd_test
 
 import (
+	"reflect"
+	"strings"
 	"testing"
+	"text/template"
 
 	"github.com/BurntSushi/toml"
 	"github.com/influxdata/influxdb/services/httpd"
 )
+
+// TestConfig_ParseHeaders ensures we can properly extract the user supplied
+// headers from the configuration file.
+//
+// This test is a success if we get the data out as we put into the TOML
+// values.
+//
+func TestConfig_ParseHeaders(t *testing.T) {
+	expectedHeaders := map[string]string{
+		"X-BestOperatingSystem": "FreeBSD",
+		"X-Hacker":              "If you're reading this, you're a hacker",
+		"X-PoweredBy":           "Nerd Rage",
+	}
+
+	// build a toml snippet that reflects the structure we have above
+	tomlData := func() (string, error) {
+		tmpl := template.New("default")
+		v := `
+[headers]
+{{- range $hdr, $val := .}}
+{{$hdr}} = "{{$val}}"
+{{- end -}}
+`
+		if _, err := tmpl.Parse(v); err != nil {
+			return "", err
+		}
+
+		sb := &strings.Builder{}
+
+		tmpl.Execute(sb, expectedHeaders)
+		return sb.String(), nil
+	}
+
+	tomlConfig, err := tomlData()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	c := httpd.Config{}
+	if _, err := toml.Decode(tomlConfig, &c); err != nil {
+		t.Fatal(err)
+	}
+
+	// place results into a map so we check if it is DeepEqual() to
+	// expectedHeaders
+
+	if !reflect.DeepEqual(expectedHeaders, c.HTTPHeaders) {
+		t.Fatalf("could not properly marshal nested slices; got %#v, expected %#v", c.HTTPHeaders, expectedHeaders)
+	}
+}
 
 func TestConfig_Parse(t *testing.T) {
 	// Parse configuration.
