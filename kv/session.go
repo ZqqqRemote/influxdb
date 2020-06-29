@@ -9,6 +9,8 @@ import (
 )
 
 var (
+	// DEPRECATED: this bucket has been remove by the migration: kv/migration/all/0006_delete-bucket-sessionsv1.go
+	// see the new top-level sessions package for newest definition
 	sessionBucket = []byte("sessionsv1")
 )
 
