@@ -212,6 +212,7 @@ func (e *Engine) fieldsPredicate(ctx context.Context, orgID influxdb.ID, bucketI
 
 	mt := models.Tags{models.NewTag(models.MeasurementTagKeyBytes, measurement)}
 	tsmKeyPrefix := mt.AppendHashKey(orgBucketEsc)
+	tsmKeyPrefix = append(tsmKeyPrefix, ',')
 
 	var canceled bool
 
@@ -317,6 +318,7 @@ func (e *Engine) fieldsNoPredicate(ctx context.Context, orgID influxdb.ID, bucke
 
 	mt := models.Tags{models.NewTag(models.MeasurementTagKeyBytes, measurement)}
 	tsmKeyPrefix := mt.AppendHashKey(orgBucketEsc)
+	tsmKeyPrefix = append(tsmKeyPrefix, ',')
 
 	var stats cursors.CursorStats
 	var canceled bool
